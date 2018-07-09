@@ -52,11 +52,7 @@ public class CopyUserToHeaderFilter implements Filter {
     private ServletRequest wrapServletRequestIfNecessary(ServletRequest servletRequest) {
         if (servletRequest instanceof HttpServletRequest) {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-            if (httpServletRequest.getRemoteUser() != null) {
-                return new CopyUserToHeaderWrapper(httpServletRequest);
-            } else {
-                return httpServletRequest;
-            }
+            return new CopyUserToHeaderWrapper(httpServletRequest);
         } else {
             return servletRequest;
         }
@@ -83,7 +79,12 @@ public class CopyUserToHeaderFilter implements Filter {
         @Override
         public Enumeration<String> getHeaders(String name) {
             if (name.equalsIgnoreCase(headerName)) {
-                return Collections.enumeration(Collections.singleton(getRemoteUser()));
+                String remoteUser = getRemoteUser();
+                if (remoteUser != null) {
+                    return Collections.enumeration(Collections.singleton(remoteUser));
+                } else {
+                    return Collections.emptyEnumeration();
+                }
             } else {
                 return super.getHeaders(name);
             }

@@ -22,7 +22,7 @@ Build this repo (`mvn install`), and add this dependency to your pom:
 
 Not using maven?
 Grab the jar from
-[github](https://github.com/CruGlobal/copy-user-to-header/releases/tag/1)
+[github](https://github.com/CruGlobal/copy-user-to-header/releases/tag/2)
 and get it into your WEB-INF/lib directory.
 
 Add this filter to your web.xml:
@@ -56,4 +56,4 @@ Add this filter to your web.xml:
 # Misc
 
 This was built to integrate Cru's siebel instance with our CAS server.
-It's a quick glue project, and will probably never see a version 2 or deployment to maven central.
+It's a quick glue project, and will probably never see deployment to maven central.
