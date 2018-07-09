@@ -60,6 +60,41 @@ it simply uses `request.getRemoteUser()` to get the username.
   </filter-mapping>
 ```
 
+## Populate a set of http headers with CAS attributes
+
+```xml
+  <filter>
+
+    <filter-name>Copy Cas Attributes to Headers Filter</filter-name>
+    <filter-class>org.cru.userheader.CopyCasAttributesToHeadersFilter</filter-class>
+
+    <!--
+      Optional; default behavior will map all attributes,
+      mapping each attribute to a header of the same name prefixed by "CAS_".
+     -->
+    <init-param>
+      <param-name>attributeMapping</param-name>
+
+      <!-- A whitespace-separated list of attribute=header mappings -->
+      <param-value>
+        someCasAttribute=A-Specific-Header-Used-By-Your-Tool
+        someOtherAttribute=Some-Other-Header
+      </param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Copy Cas Attributes to Headers Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+```
+
+Any Collection attributes will be converted to multiple headers.
+Any non-String attributes will be converted to Strings using their `toString()` method.
+
+Note: if an attribute mapping is not specified,
+the header names will not be case-insensitive, as header names often are expected to be.
+
 
 # Misc
 
