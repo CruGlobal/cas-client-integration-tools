@@ -40,7 +40,7 @@ it simply uses `request.getRemoteUser()` to get the username.
      <!-- adapt as you'd like -->
     <filter-name>Copy User to Header Filter</filter-name>
 
-    <filter-class>org.cru.userheader.CopyUserToHeaderFilter</filter-class>
+    <filter-class>org.cru.cas.client.integration.CopyUserToHeaderFilter</filter-class>
 
     <!-- optional; default is 'X-Remote-User' -->
     <init-param>
@@ -66,7 +66,7 @@ it simply uses `request.getRemoteUser()` to get the username.
   <filter>
 
     <filter-name>Copy Cas Attributes to Headers Filter</filter-name>
-    <filter-class>org.cru.userheader.CopyCasAttributesToHeadersFilter</filter-class>
+    <filter-class>org.cru.cas.client.integration.CopyCasAttributesToHeadersFilter</filter-class>
 
     <!--
       Optional; default behavior will map all attributes,

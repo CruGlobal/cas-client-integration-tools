@@ -1,4 +1,4 @@
-package org.cru.userheader;
+package org.cru.cas.client.integration;
 
 import java.io.IOException;
 import java.util.Collections;
