@@ -1,11 +1,13 @@
 # What?
 
-A small simple servlet filter that copies the request's "remote user" value to a configurable header.
+A small set of servlet filters that help integrate CAS with servlet-based enterprise tools.
 
 # Why?
 
-Some tools (like Siebel) demand a header be populated with the user's username,
-when integrating with an external authentication mechanism.
+Some enterprise tools expect SSO solutions to populate certain headers to identify the user,
+and the java CAS client doesn't do this out-of-the-box.
+Also, other bits of 'glue' are often required to get single-logout working correctly.
+
 
 # How?
 
@@ -14,18 +16,24 @@ Build this repo (`mvn install`), and add this dependency to your pom:
 
 ```xml
   <dependency>
-    <groupId>org.cru.userheader</groupId>
-    <artifactId>copy-user-to-header</artifactId>
+    <groupId>org.cru.cas</groupId>
+    <artifactId>cas-client-integration-tools</artifactId>
     <version>1</version>
   </dependency>
 ```
 
 Not using maven?
 Grab the jar from
-[github](https://github.com/CruGlobal/copy-user-to-header/releases/tag/2)
+[github](https://github.com/CruGlobal/cas-client-integration-tools/releases/tag/1)
 and get it into your WEB-INF/lib directory.
 
-Add this filter to your web.xml:
+Use one or more of the following tools by adding these filteres to your web.xml.
+
+## Populate a specific http header with the username
+
+This doesn't use anything cas-specific;
+it simply uses `request.getRemoteUser()` to get the username.
+
 ```xml
   <filter>
 
@@ -55,5 +63,4 @@ Add this filter to your web.xml:
 
 # Misc
 
-This was built to integrate Cru's siebel instance with our CAS server.
-It's a quick glue project, and will probably never see deployment to maven central.
+This was built to integrate Cru's siebel and peoplesoft instances with our CAS server.
