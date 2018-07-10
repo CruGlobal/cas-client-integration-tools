@@ -8,6 +8,9 @@
   <packaging>jar</packaging>
 
   <name>cas-client-integration-tools</name>
+  <description>
+    A small set of servlet filters that help integrate CAS with servlet-based enterprise tools.
+  </description>
   <url>https://github.com/CruGlobal/cas-client-integration-tools</url>
 
   <properties>
