@@ -96,6 +96,41 @@ Note: if an attribute mapping is not specified,
 the header names will not be case-insensitive, as header names often are expected to be.
 
 
+## Broadcast logout requests to nodes behind a loadbalancer
+
+```xml
+  <filter>
+    <filter-name>Logout Broadcast Filter</filter-name>
+    <filter-class>org.cru.cas.client.integration.LogoutBroadcastFilter</filter-class>
+
+    <!-- Required -->
+    <init-param>
+      <param-name>recipientHosts</param-name>
+
+      <!-- A whitespace-separated list of urls of the nodes that need to be notified of logouts -->
+      <param-value>
+        http://node-1:8080
+        http://node-2:8080
+        http://node-3:8080
+      </param-value>
+    </init-param>
+
+    <!-- Required -->
+    <init-param>
+      <param-name>recipientPath</param-name>
+
+      <!-- the path on each node that handles logout requests -->
+      <param-value>/logout-path</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Logout Broadcast Filter</filter-name>
+    <url-pattern>/cluster-logout</url-pattern>
+  </filter-mapping>
+```
+
+
 # Misc
 
 This was built to integrate Cru's siebel and peoplesoft instances with our CAS server.
