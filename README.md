@@ -24,7 +24,7 @@ Build this repo (`mvn install`), and add this dependency to your pom:
 
 Not using maven?
 Grab the jar from
-[github](https://github.com/CruGlobal/cas-client-integration-tools/releases/tag/1)
+[github](https://github.com/CruGlobal/cas-client-integration-tools/releases/tag/2)
 and get it into your WEB-INF/lib directory.
 
 Use one or more of the following tools by adding these filteres to your web.xml.
