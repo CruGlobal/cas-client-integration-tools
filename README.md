@@ -36,19 +36,19 @@ Add this filter to your web.xml:
 
     <!-- optional; default is 'X-Remote-User' -->
     <init-param>
-        <param-name>headerName</param-name>
+      <param-name>headerName</param-name>
 
-        <!-- use whatever header name your application expects -->
-        <param-value>Some-User-Header-Name</param-value>
+      <!-- use whatever header name your application expects -->
+      <param-value>Some-User-Header-Name</param-value>
     </init-param>
   </filter>
 
   <filter-mapping>
-      <!-- match the <filter-name> above -->
-      <filter-name>Copy User to Header Filter</filter-name>
-      
-      <!-- adapt as required; this is probably good enough for most applications -->
-      <url-pattern>/*</url-pattern>
+    <!-- match the <filter-name> above -->
+    <filter-name>Copy User to Header Filter</filter-name>
+
+    <!-- adapt as required; this is probably good enough for most applications -->
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
 ```
 
