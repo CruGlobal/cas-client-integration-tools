@@ -40,11 +40,11 @@ public class CopyCasAttributesToHeadersFilter implements Filter {
     private AttributeMapping attributeMapping;
 
     interface AttributeMapping {
-        public boolean headerIsMapped(String headerName);
+        boolean headerIsMapped(String headerName);
 
-        public String getAttributeNameForHeader(String headerName);
+        String getAttributeNameForHeader(String headerName);
 
-        public Set<String> getHeaderNamesForAttribute(String attributeName);
+        Set<String> getHeaderNamesForAttribute(String attributeName);
     }
 
     @Override
