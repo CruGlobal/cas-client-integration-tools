@@ -51,57 +51,44 @@ public class CopyCasAttributesToHeadersFilter implements Filter {
     public void init(final FilterConfig filterConfig) throws ServletException {
         String mapping = filterConfig.getInitParameter(ATTRIBUTE_MAPPING_PARAMETER);
         if (mapping != null && !mapping.isEmpty()) {
-            this.attributeMapping = parseAttributeMapping(mapping);
+            this.attributeMapping = new ExplicitAttributeMapping(mapping);
         } else {
-            this.attributeMapping = new AttributeMapping() {
-                @Override
-                public boolean headerIsMapped(String headerName) {
-                    // case-insensitive "startsWith"
-                    return headerName.regionMatches(true, 0, CAS_PREFIX, 0, CAS_PREFIX.length());
-                }
-
-                @Override
-                public String getAttributeNameForHeader(String headerName) {
-                    return headerName.substring(CAS_PREFIX.length());
-                }
-
-                @Override
-                public Set<String> getHeaderNamesForAttribute(String attributeName) {
-                    return Collections.singleton(CAS_PREFIX + attributeName);
-                }
-            };
+            this.attributeMapping = new ImplicitAttributeMapping();
         }
     }
 
-    private AttributeMapping parseAttributeMapping(String mapping) {
-        Map<String, String> headersToAttributeNames = parseHeadersToAttributeNames(mapping);
-        Map<String, Set<String>> attributeNamesToHeaders = reverseMap(headersToAttributeNames);
+    private static class ExplicitAttributeMapping implements AttributeMapping {
 
-        return new AttributeMapping() {
-            @Override
-            public boolean headerIsMapped(String headerName) {
-                return headersToAttributeNames.containsKey(headerName);
+        private final Map<String, String> headersToAttributeNames;
+        private final Map<String, Set<String>> attributeNamesToHeaders;
+
+        public ExplicitAttributeMapping(String mapping) {
+            headersToAttributeNames = parseHeadersToAttributeNames(mapping);
+            attributeNamesToHeaders = reverseMap(headersToAttributeNames);
+        }
+
+        @Override
+        public boolean headerIsMapped(String headerName) {
+            return headersToAttributeNames.containsKey(headerName);
+        }
+
+        @Override
+        public String getAttributeNameForHeader(String headerName) {
+            return headersToAttributeNames.get(headerName);
+        }
+
+        @Override
+        public Set<String> getHeaderNamesForAttribute(String attributeName) {
+            Set<String> headerNames = attributeNamesToHeaders.get(attributeName);
+            if (headerNames != null) {
+                return headerNames;
+            } else {
+                return Collections.emptySet();
             }
+        }
 
-            @Override
-            public String getAttributeNameForHeader(String headerName) {
-                return headersToAttributeNames.get(headerName);
-            }
-
-            @Override
-            public Set<String> getHeaderNamesForAttribute(String attributeName) {
-                Set<String> headerNames = attributeNamesToHeaders.get(attributeName);
-                if (headerNames != null) {
-                    return headerNames;
-                } else {
-                    return Collections.emptySet();
-                }
-            }
-        };
-    }
-
-    private Map<String, String> parseHeadersToAttributeNames(String mapping) {
-        return Stream.of(mapping.split("\\s"))
+        private Map<String, String> parseHeadersToAttributeNames(String mapping) {
+            return Stream.of(mapping.split("\\s"))
                 .filter(string -> !string.isEmpty())
                 .peek(string -> {
                     if (!string.contains(LINE_SEPARATOR)) {
@@ -114,27 +101,48 @@ public class CopyCasAttributesToHeadersFilter implements Filter {
                     throwingMergeFunction(),
                     () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)
                 ));
+        }
+
+        // borrowed from Collections.throwingMerger(), which is private
+        private <T> BinaryOperator<T> throwingMergeFunction() {
+            return (u, v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+        }
+
+        private Map<String, Set<String>> reverseMap(Map<String, String> headersToAttributeNames) {
+            return headersToAttributeNames.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                    Entry::getValue,
+                    entry -> Collections.singleton(entry.getKey()),
+                    this::mergeSets
+                ));
+        }
+
+        private Set<String> mergeSets(Set<String> set1, Set<String> set2) {
+            return Stream.of(set1, set2)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        }
+
     }
 
-    // borrowed from Collections.throwingMerger(), which is private
-    private <T> BinaryOperator<T> throwingMergeFunction() {
-        return (u, v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
-    }
+    private static class ImplicitAttributeMapping implements AttributeMapping {
 
-    private Map<String, Set<String>> reverseMap(Map<String, String> headersToAttributeNames) {
-        return headersToAttributeNames.entrySet()
-            .stream()
-            .collect(Collectors.toMap(
-                Entry::getValue,
-                entry -> Collections.singleton(entry.getKey()),
-                this::mergeSets
-            ));
-    }
+        @Override
+        public boolean headerIsMapped(String headerName) {
+            // case-insensitive "startsWith"
+            return headerName.regionMatches(true, 0, CAS_PREFIX, 0, CAS_PREFIX.length());
+        }
 
-    private Set<String> mergeSets(Set<String> set1, Set<String> set2) {
-        return Stream.of(set1, set2)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toSet());
+        @Override
+        public String getAttributeNameForHeader(String headerName) {
+            return headerName.substring(CAS_PREFIX.length());
+        }
+
+        @Override
+        public Set<String> getHeaderNamesForAttribute(String attributeName) {
+            return Collections.singleton(CAS_PREFIX + attributeName);
+        }
     }
 
     @Override
