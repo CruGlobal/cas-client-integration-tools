@@ -198,7 +198,10 @@ public class CopyCasAttributesToHeadersFilter implements Filter {
         @Override
         public String getHeader(String name) {
             if (attributeMapping.headerIsMapped(name)) {
-                return getFirstOrElseNull(getHeaderValues(name));
+                return getHeaderValues(name)
+                    .stream()
+                    .findFirst()
+                    .orElse(null);
             } else {
                 return super.getHeader(name);
             }
@@ -219,13 +222,6 @@ public class CopyCasAttributesToHeadersFilter implements Filter {
             }
         }
 
-        private String getFirstOrElseNull(List<String> values) {
-            if (values.isEmpty()) {
-                return null;
-            } else {
-                return values.get(0);
-            }
-        }
     }
 
     //@VisibleForTesting
